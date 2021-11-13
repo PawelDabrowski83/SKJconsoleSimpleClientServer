@@ -1,15 +1,12 @@
 package pl.edu.pjwstk.consoleSimpleClientServer.Server;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Server {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         Socket socket = null;
         InputStreamReader inputStreamReader = null;
@@ -18,8 +15,42 @@ public class Server {
         BufferedWriter bufferedWriter = null;
         ServerSocket serverSocket = null;
 
-        try {
+        serverSocket = new ServerSocket(5000);
+
+        while (true) {
+            try {
+                socket = serverSocket.accept();
+                inputStreamReader = new InputStreamReader(socket.getInputStream());
+                outputStreamWriter = new OutputStreamWriter(socket.getOutputStream());
+
+                bufferedReader = new BufferedReader(inputStreamReader);
+                bufferedWriter = new BufferedWriter(outputStreamWriter);
+
+                while (true) {
+                    String messageReceived = bufferedReader.readLine();
+                    System.out.println("Client: " + messageReceived);
+
+                    String messageToSend = "Message received.";
+                    bufferedWriter.write(messageToSend);
+                    bufferedWriter.newLine();
+                    bufferedWriter.flush();
+
+                    if (messageReceived.equalsIgnoreCase("quit")) {
+                        break;
+                    }
+                }
+                socket.close();
+                inputStreamReader.close();
+                outputStreamWriter.close();
+                bufferedReader.close();
+                bufferedWriter.close();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
 
         }
+
     }
 }
